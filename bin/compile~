@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+# This script installs proxychains4
+
+# Parse args
+BUILD_DIR=$1
+CACHE_DIR=$2
+ENV_DIR=$3
+
+echo "-----> Installing proxychains4"
+
+# Create directories
+mkdir -p $BUILD_DIR/.heroku/proxychains
+mkdir -p $CACHE_DIR/proxychains
+mkdir -p $BUILD_DIR/.profile.d
+
+# Define the download url for proxychains-ng source
+PROXYCHAINS_VERSION="4.15"
+PROXYCHAINS_URL="https://github.com/rofl0r/proxychains-ng/archive/refs/tags/v${PROXYCHAINS_VERSION}.tar.gz"
+
+# Download and extract
+cd $CACHE_DIR/proxychains
+if [ ! -f "proxychains-${PROXYCHAINS_VERSION}.tar.gz" ]; then
+  echo "-----> Downloading proxychains-ng v${PROXYCHAINS_VERSION}"
+  curl -sL "${PROXYCHAINS_URL}" -o "proxychains-${PROXYCHAINS_VERSION}.tar.gz"
+  tar -xzf "proxychains-${PROXYCHAINS_VERSION}.tar.gz"
+fi
+
+# Build
+cd "proxychains-ng-${PROXYCHAINS_VERSION}"
+echo "-----> Building proxychains4"
+./configure --prefix=$BUILD_DIR/.heroku/proxychains
+make
+make install
+
+# Copy default config
+cp src/proxychains.conf $BUILD_DIR/.heroku/proxychains/
+
+# Create a proxychains4 wrapper script
+cat > $BUILD_DIR/.heroku/proxychains/bin/proxychains-wrapper << 'EOF'
+#!/usr/bin/env bash
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+PROXYCHAINS_BIN="${SCRIPT_DIR}/proxychains4"
+PROXYCHAINS_CONF="${HOME}/.heroku/proxychains/proxychains.conf"
+
+if [ ! -f "${PROXYCHAINS_CONF}" ]; then
+  # Use default config if custom config doesn't exist
+  PROXYCHAINS_CONF="${HOME}/.heroku/proxychains/share/proxychains.conf"
+fi
+
+exec "${PROXYCHAINS_BIN}" -f "${PROXYCHAINS_CONF}" "$@"
+EOF
+
+chmod +x $BUILD_DIR/.heroku/proxychains/bin/proxychains-wrapper
+
+# Create .profile.d script to set up paths
+cat > $BUILD_DIR/.profile.d/000_proxychains.sh << 'EOF'
+#!/usr/bin/env bash
+export PATH="$HOME/.heroku/proxychains/bin:$PATH"
+export LD_LIBRARY_PATH="$HOME/.heroku/proxychains/lib:$LD_LIBRARY_PATH"
+EOF
+
+chmod +x $BUILD_DIR/.profile.d/000_proxychains.sh
+
+echo "-----> proxychains4 installation completed"

@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# This script returns the default process types
+
+cat << EOF
+---
+default_process_types:
+  web: proxychains-wrapper \$PORT
+EOF
