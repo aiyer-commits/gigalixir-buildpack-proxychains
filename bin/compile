@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# This script installs proxychains4 with a hardcoded library path
+# This script installs proxychains4
 # Parse args
 BUILD_DIR=$1
 CACHE_DIR=$2
 ENV_DIR=$3
-echo "-----> Installing proxychains4 with hardcoded library path"
+echo "-----> Installing proxychains4"
 # Create directories for Gigalixir environment
 mkdir -p $BUILD_DIR/.gigalixir/proxychains
 mkdir -p $CACHE_DIR/proxychains
@@ -19,63 +19,113 @@ if [ ! -f "proxychains-${PROXYCHAINS_VERSION}.tar.gz" ]; then
   curl -sL "${PROXYCHAINS_URL}" -o "proxychains-${PROXYCHAINS_VERSION}.tar.gz"
   tar -xzf "proxychains-${PROXYCHAINS_VERSION}.tar.gz"
 fi
-
-# Go to source directory
+# Build
 cd "proxychains-ng-${PROXYCHAINS_VERSION}"
-
-# Modify the source code to hardcode the library path
-echo "-----> Patching proxychains source to use hardcoded library path"
-LIBPATH="/app/.gigalixir/proxychains/lib/libproxychains4.so"
-cat > src.patch << EOF
---- src/main.c.orig
-+++ src/main.c
-@@ -30,6 +30,7 @@
- 	char *path = NULL;
- 	char buf[PATH_MAX];
- 	
-+	return "/app/.gigalixir/proxychains/lib/libproxychains4.so";
- 	/* try to get if from user's env */
- 	path = getenv(LIB_NAME_VAR);
- 	if(path && path[0] == '/') return path;
-EOF
-
-# Apply the patch
-patch -p0 < src.patch
-
-# Build with the patched source
-echo "-----> Building proxychains4 with hardcoded library path"
+echo "-----> Building proxychains4"
 ./configure --prefix=$BUILD_DIR/.gigalixir/proxychains
 make
 make install
 
-# Create an export file for other buildpacks
-cat > $BUILD_DIR/export << EOF
-export PATH="\$HOME/.gigalixir/proxychains/bin:\$PATH"
-export LD_LIBRARY_PATH="\$HOME/.gigalixir/proxychains/lib:\${LD_LIBRARY_PATH:-}"
-EOF
-chmod +x $BUILD_DIR/export
+# Create the library symlink structure
+echo "-----> Setting up library symlinks"
+mkdir -p $BUILD_DIR/usr/lib
+# Create copies and symlinks of the library in multiple locations
+cp $BUILD_DIR/.gigalixir/proxychains/lib/libproxychains4.so $BUILD_DIR/usr/lib/
+ln -sf $BUILD_DIR/usr/lib/libproxychains4.so $BUILD_DIR/usr/lib/libproxychains.so
 
 # Create .profile.d script for runtime environment
 cat > $BUILD_DIR/.profile.d/000_proxychains.sh << 'EOF'
 #!/usr/bin/env bash
-# Set up paths at startup
-export PATH="$HOME/.gigalixir/proxychains/bin:$PATH"
-export LD_LIBRARY_PATH="$HOME/.gigalixir/proxychains/lib:${LD_LIBRARY_PATH:-}"
+# Create system-wide library symlinks at runtime
+mkdir -p /usr/lib
+cp $HOME/.gigalixir/proxychains/lib/libproxychains4.so /usr/lib/ 2>/dev/null || true
+ln -sf /usr/lib/libproxychains4.so /usr/lib/libproxychains.so 2>/dev/null || true
 
-# Print diagnostic info to app log at startup
-echo "Proxychains4 environment initialized with hardcoded library path"
-echo "  - Library path: $HOME/.gigalixir/proxychains/lib"
-echo "  - Executable: $HOME/.gigalixir/proxychains/bin/proxychains4"
+# Set up path and library path
+export PATH="$HOME/.gigalixir/proxychains/bin:$PATH"
+export LD_LIBRARY_PATH="/usr/lib:$HOME/.gigalixir/proxychains/lib:${LD_LIBRARY_PATH:-}"
+
+# Create a simple proxychains shell script that uses LD_PRELOAD directly
+mkdir -p $HOME/bin
+cat > $HOME/bin/proxychains-direct << 'SCRIPT'
+#!/usr/bin/env bash
+# Parse arguments to find -f config file
+config=""
+args=()
+i=0
+while [ $i -lt $# ]; do
+  arg="${!i}"
+  if [ "$arg" = "-f" ]; then
+    i=$((i+1))
+    config="${!i}"
+  else
+    args+=("$arg")
+  fi
+  i=$((i+1))
+done
+
+# Use default config if none specified
+if [ -z "$config" ]; then
+  if [ -f "/app/_build/prod/lib/yt_audio_extractor/priv/proxychains.conf" ]; then
+    config="/app/_build/prod/lib/yt_audio_extractor/priv/proxychains.conf"
+  elif [ -f "/app/proxychains.conf" ]; then
+    config="/app/proxychains.conf"
+  else
+    echo "ERROR: No proxychains configuration file specified and none found"
+    exit 1
+  fi
+fi
+
+# Export proxychains config environment variable
+export PROXYCHAINS_CONF_FILE="$config"
+
+# Run the command with LD_PRELOAD
+LD_PRELOAD=/usr/lib/libproxychains.so "${args[@]}"
+SCRIPT
+chmod +x $HOME/bin/proxychains-direct
+
+echo "Proxychains4 environment initialized with library symlinks"
+echo "Library locations: /usr/lib/libproxychains.so, $HOME/.gigalixir/proxychains/lib/libproxychains4.so"
 EOF
 chmod +x $BUILD_DIR/.profile.d/000_proxychains.sh
 
-# Verify the installation
-echo "-----> Verifying proxychains4 installation"
-if [ -f "$BUILD_DIR/.gigalixir/proxychains/lib/libproxychains4.so" ]; then
-  echo "-----> libproxychains4.so found at $BUILD_DIR/.gigalixir/proxychains/lib/libproxychains4.so"
-else
-  echo "-----> ERROR: libproxychains4.so not found! Installation may have failed."
-  exit 1
+# Create a directory for runtime scripts
+mkdir -p $BUILD_DIR/bin
+cat > $BUILD_DIR/bin/proxychains-direct << 'EOF'
+#!/usr/bin/env bash
+# Parse arguments to find -f config file
+config=""
+args=()
+i=1
+while [ $i -le $# ]; do
+  arg="${!i}"
+  if [ "$arg" = "-f" ]; then
+    i=$((i+1))
+    config="${!i}"
+  else
+    args+=("$arg")
+  fi
+  i=$((i+1))
+done
+
+# Use default config if none specified
+if [ -z "$config" ]; then
+  if [ -f "/app/_build/prod/lib/yt_audio_extractor/priv/proxychains.conf" ]; then
+    config="/app/_build/prod/lib/yt_audio_extractor/priv/proxychains.conf"
+  elif [ -f "/app/proxychains.conf" ]; then
+    config="/app/proxychains.conf"
+  else
+    echo "ERROR: No proxychains configuration file specified and none found"
+    exit 1
+  fi
 fi
 
-echo "-----> proxychains4 installation completed with hardcoded library path"
+# Export proxychains config environment variable
+export PROXYCHAINS_CONF_FILE="$config"
+
+# Run the command with LD_PRELOAD
+LD_PRELOAD=/usr/lib/libproxychains.so "${args[@]}"
+EOF
+chmod +x $BUILD_DIR/bin/proxychains-direct
+
+echo "-----> proxychains4 installation completed with library symlinks"
