@@ -1,22 +1,17 @@
 #!/usr/bin/env bash
 # This script installs proxychains4
-
 # Parse args
 BUILD_DIR=$1
 CACHE_DIR=$2
 ENV_DIR=$3
-
 echo "-----> Installing proxychains4"
-
-# Create directories
-mkdir -p $BUILD_DIR/.heroku/proxychains
+# Create directories for Gigalixir environment
+mkdir -p $BUILD_DIR/.gigalixir/proxychains
 mkdir -p $CACHE_DIR/proxychains
 mkdir -p $BUILD_DIR/.profile.d
-
 # Define the download url for proxychains-ng source
 PROXYCHAINS_VERSION="4.15"
 PROXYCHAINS_URL="https://github.com/rofl0r/proxychains-ng/archive/refs/tags/v${PROXYCHAINS_VERSION}.tar.gz"
-
 # Download and extract
 cd $CACHE_DIR/proxychains
 if [ ! -f "proxychains-${PROXYCHAINS_VERSION}.tar.gz" ]; then
@@ -24,41 +19,63 @@ if [ ! -f "proxychains-${PROXYCHAINS_VERSION}.tar.gz" ]; then
   curl -sL "${PROXYCHAINS_URL}" -o "proxychains-${PROXYCHAINS_VERSION}.tar.gz"
   tar -xzf "proxychains-${PROXYCHAINS_VERSION}.tar.gz"
 fi
-
 # Build
 cd "proxychains-ng-${PROXYCHAINS_VERSION}"
 echo "-----> Building proxychains4"
-./configure --prefix=$BUILD_DIR/.heroku/proxychains
+./configure --prefix=$BUILD_DIR/.gigalixir/proxychains
 make
 make install
-
 # Copy default config
-cp src/proxychains.conf $BUILD_DIR/.heroku/proxychains/
-
+cp src/proxychains.conf $BUILD_DIR/.gigalixir/proxychains/
 # Create a proxychains4 wrapper script
-cat > $BUILD_DIR/.heroku/proxychains/bin/proxychains-wrapper << 'EOF'
+cat > $BUILD_DIR/.gigalixir/proxychains/bin/proxychains-wrapper << 'EOF'
 #!/usr/bin/env bash
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+PROXYCHAINS_ROOT="$( cd "$SCRIPT_DIR/.." &> /dev/null && pwd )"
 PROXYCHAINS_BIN="${SCRIPT_DIR}/proxychains4"
-PROXYCHAINS_CONF="${HOME}/.heroku/proxychains/proxychains.conf"
+PROXYCHAINS_CONF="${HOME}/.gigalixir/proxychains/proxychains.conf"
+
+# Export the library path directly in the wrapper
+export LD_LIBRARY_PATH="${PROXYCHAINS_ROOT}/lib:$LD_LIBRARY_PATH"
 
 if [ ! -f "${PROXYCHAINS_CONF}" ]; then
   # Use default config if custom config doesn't exist
-  PROXYCHAINS_CONF="${HOME}/.heroku/proxychains/share/proxychains.conf"
+  PROXYCHAINS_CONF="${PROXYCHAINS_ROOT}/share/proxychains.conf"
+fi
+
+# Check if the library exists
+if [ ! -f "${PROXYCHAINS_ROOT}/lib/libproxychains4.so" ]; then
+  echo "ERROR: Could not locate libproxychains4.so in ${PROXYCHAINS_ROOT}/lib/"
+  echo "Library paths searched: ${LD_LIBRARY_PATH}"
+  exit 1
 fi
 
 exec "${PROXYCHAINS_BIN}" -f "${PROXYCHAINS_CONF}" "$@"
 EOF
-
-chmod +x $BUILD_DIR/.heroku/proxychains/bin/proxychains-wrapper
-
+chmod +x $BUILD_DIR/.gigalixir/proxychains/bin/proxychains-wrapper
 # Create .profile.d script to set up paths
 cat > $BUILD_DIR/.profile.d/000_proxychains.sh << 'EOF'
 #!/usr/bin/env bash
-export PATH="$HOME/.heroku/proxychains/bin:$PATH"
-export LD_LIBRARY_PATH="$HOME/.heroku/proxychains/lib:$LD_LIBRARY_PATH"
+# Ensure the library path is correctly set at app startup
+export PATH="$HOME/.gigalixir/proxychains/bin:$PATH"
+export LD_LIBRARY_PATH="$HOME/.gigalixir/proxychains/lib:${LD_LIBRARY_PATH:-}"
 EOF
-
 chmod +x $BUILD_DIR/.profile.d/000_proxychains.sh
+
+# Verify the library was installed correctly
+echo "-----> Verifying proxychains4 installation"
+if [ -f "$BUILD_DIR/.gigalixir/proxychains/lib/libproxychains4.so" ]; then
+  echo "-----> libproxychains4.so found at $BUILD_DIR/.gigalixir/proxychains/lib/libproxychains4.so"
+else
+  echo "-----> ERROR: libproxychains4.so not found! Installation may have failed."
+  echo "-----> Checking for other .so files in $BUILD_DIR/.gigalixir/proxychains/lib:"
+  find "$BUILD_DIR/.gigalixir/proxychains/lib" -name "*.so" -type f
+  exit 1
+fi
+
+# Test the wrapper script
+echo "-----> Testing proxychains-wrapper"
+export LD_LIBRARY_PATH="$BUILD_DIR/.gigalixir/proxychains/lib:${LD_LIBRARY_PATH:-}"
+$BUILD_DIR/.gigalixir/proxychains/bin/proxychains-wrapper echo "Proxychains test successful" || echo "Proxychains test failed"
 
 echo "-----> proxychains4 installation completed"
