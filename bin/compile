@@ -9,6 +9,7 @@ echo "-----> Installing proxychains4"
 mkdir -p $BUILD_DIR/.gigalixir/proxychains
 mkdir -p $CACHE_DIR/proxychains
 mkdir -p $BUILD_DIR/.profile.d
+mkdir -p $BUILD_DIR/.gigalixir/proxychains/etc
 # Define the download url for proxychains-ng source
 PROXYCHAINS_VERSION="4.15"
 PROXYCHAINS_URL="https://github.com/rofl0r/proxychains-ng/archive/refs/tags/v${PROXYCHAINS_VERSION}.tar.gz"
@@ -28,36 +29,69 @@ make install
 # Copy default config
 cp src/proxychains.conf $BUILD_DIR/.gigalixir/proxychains/
 
+# Create a ld.so.conf file
+echo "$BUILD_DIR/.gigalixir/proxychains/lib" > $BUILD_DIR/.gigalixir/proxychains/etc/ld.so.conf
+echo "/app/.gigalixir/proxychains/lib" >> $BUILD_DIR/.gigalixir/proxychains/etc/ld.so.conf
+
 # Create an export file for other buildpacks to use
 cat > $BUILD_DIR/export << EOF
 export PATH="\$HOME/.gigalixir/proxychains/bin:\$PATH"
 export LD_LIBRARY_PATH="\$HOME/.gigalixir/proxychains/lib:\${LD_LIBRARY_PATH:-}"
+export LD_PRELOAD="\$HOME/.gigalixir/proxychains/lib/libproxychains4.so:\${LD_PRELOAD:-}"
 EOF
 chmod +x $BUILD_DIR/export
 
-# Create a proxychains4 wrapper script that doesn't need sourcing
+# Create a hardcoded wrapper that uses absolute paths
 cat > $BUILD_DIR/.gigalixir/proxychains/bin/proxychains-wrapper << 'EOF'
 #!/usr/bin/env bash
-# Get directory of this script
-SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
-PROXYCHAINS_ROOT="$( cd "$SCRIPT_DIR/.." &> /dev/null && pwd )"
-PROXYCHAINS_BIN="${SCRIPT_DIR}/proxychains4"
-PROXYCHAINS_CONF="${HOME}/.gigalixir/proxychains/proxychains.conf"
+# Print debug info about the environment
+echo "DEBUG: Current directory: $(pwd)"
+echo "DEBUG: HOME: $HOME"
+echo "DEBUG: LD_LIBRARY_PATH: $LD_LIBRARY_PATH"
 
-# Set the LD_LIBRARY_PATH directly in this script
-export LD_LIBRARY_PATH="${PROXYCHAINS_ROOT}/lib:${LD_LIBRARY_PATH:-}"
+# Hard-coded paths for Gigalixir environment
+PROXYCHAINS_LIB="/app/.gigalixir/proxychains/lib"
+PROXYCHAINS_BIN="/app/.gigalixir/proxychains/bin/proxychains4"
+PROXYCHAINS_CONF="/app/.gigalixir/proxychains/proxychains.conf"
 
-# Check if the library exists at runtime
-if [ ! -f "${PROXYCHAINS_ROOT}/lib/libproxychains4.so" ]; then
-  echo "ERROR: Could not locate libproxychains4.so in ${PROXYCHAINS_ROOT}/lib/"
-  echo "Library paths searched: ${LD_LIBRARY_PATH}"
-  exit 1
+# Set environment variables directly
+export LD_LIBRARY_PATH="${PROXYCHAINS_LIB}:${LD_LIBRARY_PATH:-}"
+export LD_PRELOAD="${PROXYCHAINS_LIB}/libproxychains4.so:${LD_PRELOAD:-}"
+
+# Debug output for library
+echo "DEBUG: Looking for libproxychains4.so in: ${PROXYCHAINS_LIB}"
+if [ -f "${PROXYCHAINS_LIB}/libproxychains4.so" ]; then
+  echo "DEBUG: libproxychains4.so found!"
+  ls -la ${PROXYCHAINS_LIB}/libproxychains4.so
+else
+  echo "DEBUG: libproxychains4.so NOT found!"
+  ls -la ${PROXYCHAINS_LIB} || echo "Cannot list directory"
 fi
 
 # Execute proxychains with the provided arguments
+echo "DEBUG: Running: ${PROXYCHAINS_BIN} -f ${PROXYCHAINS_CONF} $@"
 exec "${PROXYCHAINS_BIN}" -f "${PROXYCHAINS_CONF}" "$@"
 EOF
 chmod +x $BUILD_DIR/.gigalixir/proxychains/bin/proxychains-wrapper
+
+# Create another wrapper that uses ldconfig
+cat > $BUILD_DIR/.gigalixir/proxychains/bin/proxychains-ldconfig << 'EOF'
+#!/usr/bin/env bash
+
+# Create temporary ldconfig configuration
+mkdir -p /tmp/proxychains-ldconfig
+echo "/app/.gigalixir/proxychains/lib" > /tmp/proxychains-ldconfig/proxychains.conf
+
+# Run ldconfig to update cache (if we have permission)
+ldconfig -f /tmp/proxychains-ldconfig/proxychains.conf 2>/dev/null || true
+
+# Set environment variables as a fallback
+export LD_LIBRARY_PATH="/app/.gigalixir/proxychains/lib:${LD_LIBRARY_PATH:-}"
+
+# Run proxychains
+/app/.gigalixir/proxychains/bin/proxychains4 -f /app/.gigalixir/proxychains/proxychains.conf "$@"
+EOF
+chmod +x $BUILD_DIR/.gigalixir/proxychains/bin/proxychains-ldconfig
 
 # Create .profile.d script to set up paths at startup
 cat > $BUILD_DIR/.profile.d/000_proxychains.sh << 'EOF'
@@ -65,6 +99,12 @@ cat > $BUILD_DIR/.profile.d/000_proxychains.sh << 'EOF'
 # Ensure the library path is correctly set at app startup
 export PATH="$HOME/.gigalixir/proxychains/bin:$PATH"
 export LD_LIBRARY_PATH="$HOME/.gigalixir/proxychains/lib:${LD_LIBRARY_PATH:-}"
+export LD_PRELOAD="$HOME/.gigalixir/proxychains/lib/libproxychains4.so:${LD_PRELOAD:-}"
+
+# Try to update ldconfig if we have permission
+mkdir -p /tmp/proxychains-ldconfig
+echo "$HOME/.gigalixir/proxychains/lib" > /tmp/proxychains-ldconfig/proxychains.conf
+ldconfig -f /tmp/proxychains-ldconfig/proxychains.conf 2>/dev/null || true
 EOF
 chmod +x $BUILD_DIR/.profile.d/000_proxychains.sh
 
