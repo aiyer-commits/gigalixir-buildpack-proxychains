@@ -1,5 +1,5 @@
 (undo-tree-save-format-version . 1)
-"2d62e66b7af5e383205791dd580253f8d5fee7d4"
+"a7902afa5acab942af2363940fa40820c200ca62"
 [nil nil nil nil (26615 58711 770037 578000) 0 nil]
 ([nil nil ((1 . 1971) (t . -1)) nil (26615 58711 770033 754000) 0 nil])
 ([nil nil ((1971 . 1972) (t 26615 58711 780501 767000)) nil (26615 58718 380402 903000) 0 nil])
@@ -819,5 +819,139 @@ fi
 echo \"-----> proxychains4 installation completed with hardcoded library path\"
 " 0 19 (face font-lock-comment-face fontified t) 19 20 (fontified t) 20 85 (face font-lock-comment-face fontified t) 85 86 (fontified t) 86 98 (face font-lock-comment-face fontified t) 98 99 (fontified t) 99 108 (face font-lock-variable-name-face fontified t) 108 110 (fontified t) 110 111 (face font-lock-variable-name-face fontified t) 111 112 (fontified t) 112 121 (face font-lock-variable-name-face fontified t) 121 123 (fontified t) 123 124 (face font-lock-variable-name-face fontified t) 124 125 (fontified t) 125 132 (face font-lock-variable-name-face fontified t) 132 134 (fontified t) 134 135 (face font-lock-variable-name-face fontified t) 135 136 (fontified t) 136 140 (face font-lock-function-name-face fontified t) 140 141 (fontified t) 141 201 (face font-lock-string-face fontified t) 201 202 (fontified t) 202 248 (face font-lock-comment-face fontified t) 248 249 (fontified t) 249 254 (face font-lock-function-name-face fontified t) 254 259 (fontified t) 259 268 (face font-lock-variable-name-face fontified t) 268 292 (fontified t) 292 297 (face font-lock-function-name-face fontified t) 297 302 (fontified t) 302 311 (face font-lock-variable-name-face fontified t) 311 324 (fontified t) 324 329 (face font-lock-function-name-face fontified t) 329 334 (fontified t) 334 343 (face font-lock-variable-name-face fontified t) 343 355 (fontified t) 355 406 (face font-lock-comment-face fontified t) 406 407 (fontified t) 407 426 (face font-lock-variable-name-face fontified t) 426 427 (fontified t) 427 433 (face font-lock-string-face fontified t) 433 434 (fontified t) 434 449 (face font-lock-variable-name-face fontified t) 449 450 (fontified t) 450 513 (face font-lock-string-face fontified t) 513 532 (face font-lock-variable-use-face fontified t) 532 541 (face font-lock-string-face fontified t) 541 542 (fontified t) 542 564 (face font-lock-comment-face fontified t) 564 565 (fontified t) 565 567 (face font-lock-function-name-face fontified t) 567 569 (fontified t) 569 578 (face font-lock-variable-name-face fontified t) 578 591 (fontified t) 591 593 (face font-lock-keyword-face fontified t) 593 601 (fontified t) 601 616 (face font-lock-string-face fontified t) 616 635 (face font-lock-variable-use-face fontified t) 635 644 (face font-lock-string-face fontified t) 644 648 (fontified t) 648 652 (face font-lock-keyword-face fontified t) 652 655 (fontified t) 655 659 (face font-lock-function-name-face fontified t) 659 660 (fontified t) 660 698 (face font-lock-string-face fontified t) 698 717 (face font-lock-variable-use-face fontified t) 717 719 (face font-lock-string-face fontified t) 719 722 (fontified t) 722 726 (face font-lock-function-name-face fontified t) 726 731 (fontified t) 731 734 (face font-lock-string-face fontified t) 734 749 (face font-lock-variable-use-face fontified t) 749 751 (face font-lock-string-face fontified t) 751 755 (fontified t) 755 770 (face font-lock-string-face fontified t) 770 789 (face font-lock-variable-use-face fontified t) 789 798 (face font-lock-string-face fontified t) 798 801 (fontified t) 801 804 (face font-lock-function-name-face fontified t) 804 810 (fontified t) 810 825 (face font-lock-string-face fontified t) 825 844 (face font-lock-variable-use-face fontified t) 844 853 (face font-lock-string-face fontified t) 853 854 (fontified t) 854 856 (face font-lock-keyword-face fontified t) 856 858 (fontified t) 858 882 (face font-lock-comment-face fontified t) 882 883 (fontified t) 883 885 (face font-lock-function-name-face fontified t) 885 886 (fontified t) 886 904 (face font-lock-string-face fontified t) 904 923 (face font-lock-variable-use-face fontified t) 923 925 (face font-lock-string-face fontified t) 925 927 (fontified t) 927 980 (face font-lock-comment-face fontified t) 980 981 (fontified t) 981 985 (face font-lock-function-name-face fontified t) 985 986 (fontified t) 986 1052 (face font-lock-string-face fontified t) 1052 1053 (fontified t) 1053 1060 (face font-lock-variable-name-face fontified t) 1060 1061 (fontified t) 1061 1113 (face font-lock-string-face fontified t) 1113 1114 (fontified t) 1114 1117 (face font-lock-function-name-face fontified t) 1117 1133 (fontified t) 1133 1136 (face sh-heredoc fontified t) 1136 1137 (syntax-table (15) sh-here-doc-marker #("EOF" 0 3 (face sh-heredoc fontified t)) fontified t) 1137 1410 (face sh-heredoc fontified t) 1410 1413 (fontified t) 1413 1414 (syntax-table (15) fontified t) 1414 1415 (fontified t) 1415 1432 (face font-lock-comment-face fontified t) 1432 1433 (fontified t) 1433 1438 (face font-lock-function-name-face fontified t) 1438 1456 (fontified t) 1456 1487 (face font-lock-comment-face fontified t) 1487 1488 (fontified t) 1488 1492 (face font-lock-function-name-face fontified t) 1492 1493 (fontified t) 1493 1500 (face font-lock-string-face fontified t) 1500 1551 (face font-lock-string-face fontified t) 1551 1552 (fontified t) 1552 1563 (face font-lock-function-name-face fontified t) 1563 1574 (fontified t) 1574 1583 (face font-lock-variable-name-face fontified t) 1583 1607 (fontified t) 1607 1611 (face font-lock-function-name-face fontified t) 1611 1612 (fontified t) 1612 1616 (face font-lock-function-name-face fontified t) 1616 1626 (fontified t) 1626 1670 (face font-lock-comment-face fontified t) 1670 1671 (fontified t) 1671 1674 (face font-lock-function-name-face fontified t) 1674 1678 (fontified t) 1678 1687 (face font-lock-variable-name-face fontified t) 1687 1698 (fontified t) 1698 1701 (face sh-heredoc fontified t) 1701 1702 (fontified t syntax-table (15) sh-here-doc-marker #("EOF" 0 3 (fontified nil))) 1702 1838 (face sh-heredoc fontified t) 1838 1841 (fontified t) 1841 1842 (fontified t syntax-table (15)) 1842 1847 (face font-lock-function-name-face fontified t) 1847 1852 (fontified t) 1852 1861 (face font-lock-variable-name-face fontified t) 1861 1870 (fontified t) 1870 1920 (face font-lock-comment-face fontified t) 1920 1921 (fontified t) 1921 1924 (face font-lock-function-name-face fontified t) 1924 1928 (fontified t) 1928 1937 (face font-lock-variable-name-face fontified t) 1937 1971 (fontified t) 1971 1976 (face sh-heredoc fontified t) 1976 1977 (fontified t syntax-table (15) sh-here-doc-marker #("EOF" 0 3 (fontified nil))) 1977 2155 (face sh-heredoc fontified t) 2155 2156 (face sh-heredoc fontified t) 2156 2202 (face sh-heredoc fontified t) 2202 2401 (face sh-heredoc fontified t) 2401 2404 (fontified t) 2404 2405 (fontified t syntax-table (15)) 2405 2410 (face font-lock-function-name-face fontified t) 2410 2415 (fontified t) 2415 2424 (face font-lock-variable-name-face fontified t) 2424 2456 (fontified t) 2456 2481 (face font-lock-comment-face fontified t) 2481 2482 (fontified t) 2482 2486 (face font-lock-function-name-face fontified t) 2486 2487 (fontified t) 2487 2531 (face font-lock-string-face fontified t) 2531 2532 (fontified t) 2532 2534 (face font-lock-keyword-face fontified t) 2534 2540 (fontified t) 2540 2598 (face font-lock-string-face fontified t) 2598 2602 (fontified t) 2602 2606 (face font-lock-keyword-face fontified t) 2606 2609 (fontified t) 2609 2613 (face font-lock-function-name-face fontified t) 2613 2614 (fontified t) 2614 2707 (face font-lock-string-face fontified t) 2707 2708 (fontified t) 2708 2712 (face font-lock-keyword-face fontified t) 2712 2715 (fontified t) 2715 2719 (face font-lock-function-name-face fontified t) 2719 2720 (fontified t) 2720 2795 (face font-lock-string-face fontified t) 2795 2798 (fontified t) 2798 2802 (face font-lock-keyword-face fontified t) 2802 2805 (fontified t) 2805 2807 (face font-lock-keyword-face fontified t) 2807 2809 (fontified t) 2809 2813 (face font-lock-function-name-face fontified t) 2813 2814 (fontified t) 2814 2885 (face font-lock-string-face fontified t) 2885 2886 (face font-lock-string-face fontified t rear-nonsticky t) 2886 2887 (fontified t)) . 1) (undo-tree-id7 . -2887) (undo-tree-id8 . -57) (undo-tree-id9 . -57) (undo-tree-id10 . -57) (undo-tree-id11 . -20) (undo-tree-id12 . -57) (t 26617 13309 183907 494000)) nil (26617 14089 44110 326000) 0 nil])
 ([nil nil ((nil rear-nonsticky nil 4104 . 4105) (nil fontified nil 1 . 4105) (1 . 4105)) nil (26617 14089 44099 265000) 0 nil])
-([nil current ((4105 . 4106)) nil (26617 14089 44094 245000) 0 nil])
+([nil nil ((4105 . 4106)) nil (26617 14089 44094 245000) 0 nil])
+([nil nil ((#("#!/usr/bin/env bash
+# This script installs proxychains4
+# Parse args
+BUILD_DIR=$1
+CACHE_DIR=$2
+ENV_DIR=$3
+echo \"-----> Installing proxychains4\"
+# Create directories for Gigalixir environment
+mkdir -p $BUILD_DIR/.gigalixir/proxychains
+mkdir -p $CACHE_DIR/proxychains
+mkdir -p $BUILD_DIR/.profile.d
+# Define the download url for proxychains-ng source
+PROXYCHAINS_VERSION=\"4.15\"
+PROXYCHAINS_URL=\"https://github.com/rofl0r/proxychains-ng/archive/refs/tags/v${PROXYCHAINS_VERSION}.tar.gz\"
+# Download and extract
+cd $CACHE_DIR/proxychains
+if [ ! -f \"proxychains-${PROXYCHAINS_VERSION}.tar.gz\" ]; then
+  echo \"-----> Downloading proxychains-ng v${PROXYCHAINS_VERSION}\"
+  curl -sL \"${PROXYCHAINS_URL}\" -o \"proxychains-${PROXYCHAINS_VERSION}.tar.gz\"
+  tar -xzf \"proxychains-${PROXYCHAINS_VERSION}.tar.gz\"
+fi
+# Build
+cd \"proxychains-ng-${PROXYCHAINS_VERSION}\"
+echo \"-----> Building proxychains4\"
+./configure --prefix=$BUILD_DIR/.gigalixir/proxychains
+make
+make install
+
+# Create the library symlink structure
+echo \"-----> Setting up library symlinks\"
+mkdir -p $BUILD_DIR/usr/lib
+# Create copies and symlinks of the library in multiple locations
+cp $BUILD_DIR/.gigalixir/proxychains/lib/libproxychains4.so $BUILD_DIR/usr/lib/
+ln -sf $BUILD_DIR/usr/lib/libproxychains4.so $BUILD_DIR/usr/lib/libproxychains.so
+
+# Create .profile.d script for runtime environment
+cat > $BUILD_DIR/.profile.d/000_proxychains.sh << 'EOF'
+#!/usr/bin/env bash
+# Create system-wide library symlinks at runtime
+mkdir -p /usr/lib
+cp $HOME/.gigalixir/proxychains/lib/libproxychains4.so /usr/lib/ 2>/dev/null || true
+ln -sf /usr/lib/libproxychains4.so /usr/lib/libproxychains.so 2>/dev/null || true
+
+# Set up path and library path
+export PATH=\"$HOME/.gigalixir/proxychains/bin:$PATH\"
+export LD_LIBRARY_PATH=\"/usr/lib:$HOME/.gigalixir/proxychains/lib:${LD_LIBRARY_PATH:-}\"
+
+# Create a simple proxychains shell script that uses LD_PRELOAD directly
+mkdir -p $HOME/bin
+cat > $HOME/bin/proxychains-direct << 'SCRIPT'
+#!/usr/bin/env bash
+# Parse arguments to find -f config file
+config=\"\"
+args=()
+i=0
+while [ $i -lt $# ]; do
+  arg=\"${!i}\"
+  if [ \"$arg\" = \"-f\" ]; then
+    i=$((i+1))
+    config=\"${!i}\"
+  else
+    args+=(\"$arg\")
+  fi
+  i=$((i+1))
+done
+
+# Use default config if none specified
+if [ -z \"$config\" ]; then
+  if [ -f \"/app/_build/prod/lib/yt_audio_extractor/priv/proxychains.conf\" ]; then
+    config=\"/app/_build/prod/lib/yt_audio_extractor/priv/proxychains.conf\"
+  elif [ -f \"/app/proxychains.conf\" ]; then
+    config=\"/app/proxychains.conf\"
+  else
+    echo \"ERROR: No proxychains configuration file specified and none found\"
+    exit 1
+  fi
+fi
+
+# Export proxychains config environment variable
+export PROXYCHAINS_CONF_FILE=\"$config\"
+
+# Run the command with LD_PRELOAD
+LD_PRELOAD=/usr/lib/libproxychains.so \"${args[@]}\"
+SCRIPT
+chmod +x $HOME/bin/proxychains-direct
+
+echo \"Proxychains4 environment initialized with library symlinks\"
+echo \"Library locations: /usr/lib/libproxychains.so, $HOME/.gigalixir/proxychains/lib/libproxychains4.so\"
+EOF
+chmod +x $BUILD_DIR/.profile.d/000_proxychains.sh
+
+# Create a directory for runtime scripts
+mkdir -p $BUILD_DIR/bin
+cat > $BUILD_DIR/bin/proxychains-direct << 'EOF'
+#!/usr/bin/env bash
+# Parse arguments to find -f config file
+config=\"\"
+args=()
+i=1
+while [ $i -le $# ]; do
+  arg=\"${!i}\"
+  if [ \"$arg\" = \"-f\" ]; then
+    i=$((i+1))
+    config=\"${!i}\"
+  else
+    args+=(\"$arg\")
+  fi
+  i=$((i+1))
+done
+
+# Use default config if none specified
+if [ -z \"$config\" ]; then
+  if [ -f \"/app/_build/prod/lib/yt_audio_extractor/priv/proxychains.conf\" ]; then
+    config=\"/app/_build/prod/lib/yt_audio_extractor/priv/proxychains.conf\"
+  elif [ -f \"/app/proxychains.conf\" ]; then
+    config=\"/app/proxychains.conf\"
+  else
+    echo \"ERROR: No proxychains configuration file specified and none found\"
+    exit 1
+  fi
+fi
+
+# Export proxychains config environment variable
+export PROXYCHAINS_CONF_FILE=\"$config\"
+
+# Run the command with LD_PRELOAD
+LD_PRELOAD=/usr/lib/libproxychains.so \"${args[@]}\"
+EOF
+chmod +x $BUILD_DIR/bin/proxychains-direct
+
+echo \"-----> proxychains4 installation completed with library symlinks\"
+" 0 19 (face font-lock-comment-face fontified t) 19 20 (fontified t) 20 55 (face font-lock-comment-face fontified t) 55 56 (fontified t) 56 68 (face font-lock-comment-face fontified t) 68 69 (fontified t) 69 78 (face font-lock-variable-name-face fontified t) 78 80 (fontified t) 80 81 (face font-lock-variable-name-face fontified t) 81 82 (fontified t) 82 91 (face font-lock-variable-name-face fontified t) 91 93 (fontified t) 93 94 (face font-lock-variable-name-face fontified t) 94 95 (fontified t) 95 102 (face font-lock-variable-name-face fontified t) 102 104 (fontified t) 104 105 (face font-lock-variable-name-face fontified t) 105 106 (fontified t) 106 110 (face font-lock-function-name-face fontified t) 110 111 (fontified t) 111 143 (face font-lock-string-face fontified t) 143 144 (fontified t) 144 190 (face font-lock-comment-face fontified t) 190 191 (fontified t) 191 196 (face font-lock-function-name-face fontified t) 196 201 (fontified t) 201 210 (face font-lock-variable-name-face fontified t) 210 234 (fontified t) 234 239 (face font-lock-function-name-face fontified t) 239 244 (fontified t) 244 253 (face font-lock-variable-name-face fontified t) 253 266 (fontified t) 266 271 (face font-lock-function-name-face fontified t) 271 276 (fontified t) 276 285 (face font-lock-variable-name-face fontified t) 285 297 (fontified t) 297 348 (face font-lock-comment-face fontified t) 348 349 (fontified t) 349 368 (face font-lock-variable-name-face fontified t) 368 369 (fontified t) 369 375 (face font-lock-string-face fontified t) 375 376 (fontified t) 376 391 (face font-lock-variable-name-face fontified t) 391 392 (fontified t) 392 455 (face font-lock-string-face fontified t) 455 474 (face font-lock-variable-use-face fontified t) 474 483 (face font-lock-string-face fontified t) 483 484 (fontified t) 484 506 (face font-lock-comment-face fontified t) 506 507 (fontified t) 507 509 (face font-lock-function-name-face fontified t) 509 511 (fontified t) 511 520 (face font-lock-variable-name-face fontified t) 520 533 (fontified t) 533 535 (face font-lock-keyword-face fontified t) 535 543 (fontified t) 543 558 (face font-lock-string-face fontified t) 558 577 (face font-lock-variable-use-face fontified t) 577 586 (face font-lock-string-face fontified t) 586 590 (fontified t) 590 594 (face font-lock-keyword-face fontified t) 594 597 (fontified t) 597 601 (face font-lock-function-name-face fontified t) 601 602 (fontified t) 602 640 (face font-lock-string-face fontified t) 640 659 (face font-lock-variable-use-face fontified t) 659 661 (face font-lock-string-face fontified t) 661 664 (fontified t) 664 668 (face font-lock-function-name-face fontified t) 668 673 (fontified t) 673 676 (face font-lock-string-face fontified t) 676 691 (face font-lock-variable-use-face fontified t) 691 693 (face font-lock-string-face fontified t) 693 697 (fontified t) 697 712 (face font-lock-string-face fontified t) 712 731 (face font-lock-variable-use-face fontified t) 731 740 (face font-lock-string-face fontified t) 740 743 (fontified t) 743 746 (face font-lock-function-name-face fontified t) 746 752 (fontified t) 752 767 (face font-lock-string-face fontified t) 767 786 (face font-lock-variable-use-face fontified t) 786 795 (face font-lock-string-face fontified t) 795 796 (fontified t) 796 798 (face font-lock-keyword-face fontified t) 798 799 (fontified t) 799 806 (face font-lock-comment-face fontified t) 806 807 (fontified t) 807 809 (face font-lock-function-name-face fontified t) 809 810 (fontified t) 810 828 (face font-lock-string-face fontified t) 828 847 (face font-lock-variable-use-face fontified t) 847 849 (face font-lock-string-face fontified t) 849 850 (fontified t) 850 854 (face font-lock-function-name-face fontified t) 854 855 (fontified t) 855 885 (face font-lock-string-face fontified t) 885 886 (fontified t) 886 897 (face font-lock-function-name-face fontified t) 897 908 (fontified t) 908 917 (face font-lock-variable-name-face fontified t) 917 941 (fontified t) 941 945 (face font-lock-function-name-face fontified t) 945 946 (fontified t) 946 950 (face font-lock-function-name-face fontified t) 950 960 (fontified t) 960 998 (face font-lock-comment-face fontified t) 998 999 (fontified t) 999 1003 (face font-lock-function-name-face fontified t) 1003 1004 (fontified t) 1004 1040 (face font-lock-string-face fontified t) 1040 1041 (fontified t) 1041 1046 (face font-lock-function-name-face fontified t) 1046 1051 (fontified t) 1051 1060 (face font-lock-variable-name-face fontified t) 1060 1069 (fontified t) 1069 1134 (face font-lock-comment-face fontified t) 1134 1135 (fontified t) 1135 1137 (face font-lock-function-name-face fontified t) 1137 1139 (fontified t) 1139 1148 (face font-lock-variable-name-face fontified t) 1148 1196 (fontified t) 1196 1205 (face font-lock-variable-name-face fontified t) 1205 1215 (fontified t) 1215 1217 (face font-lock-function-name-face fontified t) 1217 1223 (fontified t) 1223 1232 (face font-lock-variable-name-face fontified t) 1232 1261 (fontified t) 1261 1270 (face font-lock-variable-name-face fontified t) 1270 1298 (fontified t) 1298 1348 (face font-lock-comment-face fontified t) 1348 1349 (fontified t) 1349 1352 (face font-lock-function-name-face fontified t) 1352 1356 (fontified t) 1356 1365 (face font-lock-variable-name-face fontified t) 1365 1399 (fontified t) 1399 1404 (face sh-heredoc fontified t) 1404 1405 (syntax-table (15) sh-here-doc-marker #("EOF" 0 3 (face sh-heredoc fontified t)) fontified t) 1405 1500 (face sh-heredoc fontified t) 1500 1577 (face sh-heredoc fontified t) 3006 3007 (syntax-table (15)) 3171 3172 (syntax-table (15) sh-here-doc-marker #("EOF" 0 3 (fontified nil))) 3628 3672 (face sh-heredoc fontified t) 3672 3985 (face sh-heredoc fontified t) 3985 3988 (fontified t) 3988 3989 (fontified t syntax-table (15)) 3989 3994 (face font-lock-function-name-face fontified t) 3994 3999 (fontified t) 3999 4008 (face font-lock-variable-name-face fontified t) 4008 4033 (fontified t) 4033 4037 (face font-lock-function-name-face fontified t) 4037 4038 (fontified t) 4038 4103 (face font-lock-string-face fontified t) 4103 4104 (face font-lock-string-face fontified t rear-nonsticky t) 4104 4105 (fontified t)) . 1) (undo-tree-id13 . -4105) (undo-tree-id14 . -4104) (t 26617 14089 45107 840000)) nil (26617 15774 383275 603000) 0 nil])
+([nil nil ((nil rear-nonsticky nil 3119 . 3120) (nil fontified nil 1 . 3120) (1 . 3120)) nil (26617 15774 383267 98000) 0 nil])
+([nil current ((3120 . 3121)) nil (26617 15774 383260 948000) 0 nil])
 nil

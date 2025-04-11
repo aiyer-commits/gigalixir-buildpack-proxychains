@@ -9,6 +9,7 @@ echo "-----> Installing proxychains4"
 mkdir -p $BUILD_DIR/.gigalixir/proxychains
 mkdir -p $CACHE_DIR/proxychains
 mkdir -p $BUILD_DIR/.profile.d
+mkdir -p $BUILD_DIR/bin
 # Define the download url for proxychains-ng source
 PROXYCHAINS_VERSION="4.15"
 PROXYCHAINS_URL="https://github.com/rofl0r/proxychains-ng/archive/refs/tags/v${PROXYCHAINS_VERSION}.tar.gz"
@@ -33,6 +34,45 @@ mkdir -p $BUILD_DIR/usr/lib
 cp $BUILD_DIR/.gigalixir/proxychains/lib/libproxychains4.so $BUILD_DIR/usr/lib/
 ln -sf $BUILD_DIR/usr/lib/libproxychains4.so $BUILD_DIR/usr/lib/libproxychains.so
 
+# Create the proxychains-direct script
+cat > $BUILD_DIR/bin/proxychains-direct << 'EOF'
+#!/usr/bin/env bash
+# Parse arguments to find -f config file
+config=""
+new_args=()
+i=1
+while [ $i -le $# ]; do
+  arg="${!i}"
+  if [ "$arg" = "-f" ]; then
+    i=$((i+1))
+    config="${!i}"
+  else
+    new_args+=("$arg")
+  fi
+  i=$((i+1))
+done
+
+# Use default config if none specified
+if [ -z "$config" ]; then
+  if [ -f "/app/_build/prod/lib/yt_audio_extractor/priv/proxychains.conf" ]; then
+    config="/app/_build/prod/lib/yt_audio_extractor/priv/proxychains.conf"
+  elif [ -f "/app/proxychains.conf" ]; then
+    config="/app/proxychains.conf"
+  else
+    echo "ERROR: No proxychains configuration file specified and none found" >&2
+    exit 1
+  fi
+fi
+
+# Export proxychains config environment variable
+export PROXYCHAINS_CONF_FILE="$config"
+
+# Run the command with LD_PRELOAD and capture output
+# The key change is redirecting stderr to a log file
+LD_PRELOAD=/usr/lib/libproxychains.so "${new_args[@]}" 2>/tmp/proxychains.log
+EOF
+chmod +x $BUILD_DIR/bin/proxychains-direct
+
 # Create .profile.d script for runtime environment
 cat > $BUILD_DIR/.profile.d/000_proxychains.sh << 'EOF'
 #!/usr/bin/env bash
@@ -42,90 +82,11 @@ cp $HOME/.gigalixir/proxychains/lib/libproxychains4.so /usr/lib/ 2>/dev/null || 
 ln -sf /usr/lib/libproxychains4.so /usr/lib/libproxychains.so 2>/dev/null || true
 
 # Set up path and library path
-export PATH="$HOME/.gigalixir/proxychains/bin:$PATH"
+export PATH="$HOME/bin:$HOME/.gigalixir/proxychains/bin:$PATH"
 export LD_LIBRARY_PATH="/usr/lib:$HOME/.gigalixir/proxychains/lib:${LD_LIBRARY_PATH:-}"
 
-# Create a simple proxychains shell script that uses LD_PRELOAD directly
-mkdir -p $HOME/bin
-cat > $HOME/bin/proxychains-direct << 'SCRIPT'
-#!/usr/bin/env bash
-# Parse arguments to find -f config file
-config=""
-args=()
-i=0
-while [ $i -lt $# ]; do
-  arg="${!i}"
-  if [ "$arg" = "-f" ]; then
-    i=$((i+1))
-    config="${!i}"
-  else
-    args+=("$arg")
-  fi
-  i=$((i+1))
-done
-
-# Use default config if none specified
-if [ -z "$config" ]; then
-  if [ -f "/app/_build/prod/lib/yt_audio_extractor/priv/proxychains.conf" ]; then
-    config="/app/_build/prod/lib/yt_audio_extractor/priv/proxychains.conf"
-  elif [ -f "/app/proxychains.conf" ]; then
-    config="/app/proxychains.conf"
-  else
-    echo "ERROR: No proxychains configuration file specified and none found"
-    exit 1
-  fi
-fi
-
-# Export proxychains config environment variable
-export PROXYCHAINS_CONF_FILE="$config"
-
-# Run the command with LD_PRELOAD
-LD_PRELOAD=/usr/lib/libproxychains.so "${args[@]}"
-SCRIPT
-chmod +x $HOME/bin/proxychains-direct
-
 echo "Proxychains4 environment initialized with library symlinks"
-echo "Library locations: /usr/lib/libproxychains.so, $HOME/.gigalixir/proxychains/lib/libproxychains4.so"
 EOF
 chmod +x $BUILD_DIR/.profile.d/000_proxychains.sh
-
-# Create a directory for runtime scripts
-mkdir -p $BUILD_DIR/bin
-cat > $BUILD_DIR/bin/proxychains-direct << 'EOF'
-#!/usr/bin/env bash
-# Parse arguments to find -f config file
-config=""
-args=()
-i=1
-while [ $i -le $# ]; do
-  arg="${!i}"
-  if [ "$arg" = "-f" ]; then
-    i=$((i+1))
-    config="${!i}"
-  else
-    args+=("$arg")
-  fi
-  i=$((i+1))
-done
-
-# Use default config if none specified
-if [ -z "$config" ]; then
-  if [ -f "/app/_build/prod/lib/yt_audio_extractor/priv/proxychains.conf" ]; then
-    config="/app/_build/prod/lib/yt_audio_extractor/priv/proxychains.conf"
-  elif [ -f "/app/proxychains.conf" ]; then
-    config="/app/proxychains.conf"
-  else
-    echo "ERROR: No proxychains configuration file specified and none found"
-    exit 1
-  fi
-fi
-
-# Export proxychains config environment variable
-export PROXYCHAINS_CONF_FILE="$config"
-
-# Run the command with LD_PRELOAD
-LD_PRELOAD=/usr/lib/libproxychains.so "${args[@]}"
-EOF
-chmod +x $BUILD_DIR/bin/proxychains-direct
 
 echo "-----> proxychains4 installation completed with library symlinks"
