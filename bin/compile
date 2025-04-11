@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# This script installs proxychains4
+# This script installs proxychains4 with a hardcoded library path
 # Parse args
 BUILD_DIR=$1
 CACHE_DIR=$2
 ENV_DIR=$3
-echo "-----> Installing proxychains4"
+echo "-----> Installing proxychains4 with hardcoded library path"
 # Create directories for Gigalixir environment
 mkdir -p $BUILD_DIR/.gigalixir/proxychains
 mkdir -p $CACHE_DIR/proxychains
@@ -19,68 +19,63 @@ if [ ! -f "proxychains-${PROXYCHAINS_VERSION}.tar.gz" ]; then
   curl -sL "${PROXYCHAINS_URL}" -o "proxychains-${PROXYCHAINS_VERSION}.tar.gz"
   tar -xzf "proxychains-${PROXYCHAINS_VERSION}.tar.gz"
 fi
-# Build
+
+# Go to source directory
 cd "proxychains-ng-${PROXYCHAINS_VERSION}"
-echo "-----> Building proxychains4"
+
+# Modify the source code to hardcode the library path
+echo "-----> Patching proxychains source to use hardcoded library path"
+LIBPATH="/app/.gigalixir/proxychains/lib/libproxychains4.so"
+cat > src.patch << EOF
+--- src/main.c.orig
++++ src/main.c
+@@ -30,6 +30,7 @@
+ 	char *path = NULL;
+ 	char buf[PATH_MAX];
+ 	
++	return "/app/.gigalixir/proxychains/lib/libproxychains4.so";
+ 	/* try to get if from user's env */
+ 	path = getenv(LIB_NAME_VAR);
+ 	if(path && path[0] == '/') return path;
+EOF
+
+# Apply the patch
+patch -p0 < src.patch
+
+# Build with the patched source
+echo "-----> Building proxychains4 with hardcoded library path"
 ./configure --prefix=$BUILD_DIR/.gigalixir/proxychains
 make
 make install
 
-# Copy the library to a location in the standard library search path
-echo "-----> Installing libproxychains4.so to standard library locations"
-mkdir -p $BUILD_DIR/lib
-cp $BUILD_DIR/.gigalixir/proxychains/lib/libproxychains4.so $BUILD_DIR/lib/
-
-# Also copy to the app directory where the application will look
-mkdir -p $BUILD_DIR/_build/prod/lib/yt_audio_extractor/priv/lib
-cp $BUILD_DIR/.gigalixir/proxychains/lib/libproxychains4.so $BUILD_DIR/_build/prod/lib/yt_audio_extractor/priv/lib/
-
-# Create a .so in the standard library path that points to the actual .so
-cat > $BUILD_DIR/.profile.d/001_proxychains_symlinks.sh << 'EOF'
-#!/usr/bin/env bash
-# Create symbolic links to the library in standard locations
-mkdir -p $HOME/lib
-ln -sf $HOME/.gigalixir/proxychains/lib/libproxychains4.so $HOME/lib/libproxychains4.so
-
-# Also link in the application directory
-mkdir -p $HOME/_build/prod/lib/yt_audio_extractor/priv/lib
-ln -sf $HOME/.gigalixir/proxychains/lib/libproxychains4.so $HOME/_build/prod/lib/yt_audio_extractor/priv/lib/libproxychains4.so
-
-# Add these directories to LD_LIBRARY_PATH
-export LD_LIBRARY_PATH="$HOME/lib:$HOME/_build/prod/lib/yt_audio_extractor/priv/lib:$HOME/.gigalixir/proxychains/lib:${LD_LIBRARY_PATH:-}"
-EOF
-chmod +x $BUILD_DIR/.profile.d/001_proxychains_symlinks.sh
-
 # Create an export file for other buildpacks
 cat > $BUILD_DIR/export << EOF
 export PATH="\$HOME/.gigalixir/proxychains/bin:\$PATH"
-export LD_LIBRARY_PATH="\$HOME/lib:\$HOME/_build/prod/lib/yt_audio_extractor/priv/lib:\$HOME/.gigalixir/proxychains/lib:\${LD_LIBRARY_PATH:-}"
+export LD_LIBRARY_PATH="\$HOME/.gigalixir/proxychains/lib:\${LD_LIBRARY_PATH:-}"
 EOF
 chmod +x $BUILD_DIR/export
-
-# Create a modified proxychains4 wrapper script
-cat > $BUILD_DIR/.gigalixir/proxychains/bin/proxychains-wrapper << 'EOF'
-#!/usr/bin/env bash
-# Set library path to include all possible locations
-export LD_LIBRARY_PATH="$HOME/lib:$HOME/_build/prod/lib/yt_audio_extractor/priv/lib:$HOME/.gigalixir/proxychains/lib:${LD_LIBRARY_PATH:-}"
-
-# Run proxychains with all arguments passed through
-exec "$HOME/.gigalixir/proxychains/bin/proxychains4" "$@"
-EOF
-chmod +x $BUILD_DIR/.gigalixir/proxychains/bin/proxychains-wrapper
 
 # Create .profile.d script for runtime environment
 cat > $BUILD_DIR/.profile.d/000_proxychains.sh << 'EOF'
 #!/usr/bin/env bash
 # Set up paths at startup
 export PATH="$HOME/.gigalixir/proxychains/bin:$PATH"
-export LD_LIBRARY_PATH="$HOME/lib:$HOME/_build/prod/lib/yt_audio_extractor/priv/lib:$HOME/.gigalixir/proxychains/lib:${LD_LIBRARY_PATH:-}"
+export LD_LIBRARY_PATH="$HOME/.gigalixir/proxychains/lib:${LD_LIBRARY_PATH:-}"
 
 # Print diagnostic info to app log at startup
-echo "Proxychains4 environment initialized"
-echo "  - Library paths: $LD_LIBRARY_PATH"
+echo "Proxychains4 environment initialized with hardcoded library path"
+echo "  - Library path: $HOME/.gigalixir/proxychains/lib"
 echo "  - Executable: $HOME/.gigalixir/proxychains/bin/proxychains4"
 EOF
 chmod +x $BUILD_DIR/.profile.d/000_proxychains.sh
 
-echo "-----> proxychains4 installation completed"
+# Verify the installation
+echo "-----> Verifying proxychains4 installation"
+if [ -f "$BUILD_DIR/.gigalixir/proxychains/lib/libproxychains4.so" ]; then
+  echo "-----> libproxychains4.so found at $BUILD_DIR/.gigalixir/proxychains/lib/libproxychains4.so"
+else
+  echo "-----> ERROR: libproxychains4.so not found! Installation may have failed."
+  exit 1
+fi
+
+echo "-----> proxychains4 installation completed with hardcoded library path"
