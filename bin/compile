@@ -27,33 +27,39 @@ make
 make install
 # Copy default config
 cp src/proxychains.conf $BUILD_DIR/.gigalixir/proxychains/
-# Create a proxychains4 wrapper script
+
+# Create an export file for other buildpacks to use
+cat > $BUILD_DIR/export << EOF
+export PATH="\$HOME/.gigalixir/proxychains/bin:\$PATH"
+export LD_LIBRARY_PATH="\$HOME/.gigalixir/proxychains/lib:\${LD_LIBRARY_PATH:-}"
+EOF
+chmod +x $BUILD_DIR/export
+
+# Create a proxychains4 wrapper script that doesn't need sourcing
 cat > $BUILD_DIR/.gigalixir/proxychains/bin/proxychains-wrapper << 'EOF'
 #!/usr/bin/env bash
+# Get directory of this script
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 PROXYCHAINS_ROOT="$( cd "$SCRIPT_DIR/.." &> /dev/null && pwd )"
 PROXYCHAINS_BIN="${SCRIPT_DIR}/proxychains4"
 PROXYCHAINS_CONF="${HOME}/.gigalixir/proxychains/proxychains.conf"
 
-# Export the library path directly in the wrapper
-export LD_LIBRARY_PATH="${PROXYCHAINS_ROOT}/lib:$LD_LIBRARY_PATH"
+# Set the LD_LIBRARY_PATH directly in this script
+export LD_LIBRARY_PATH="${PROXYCHAINS_ROOT}/lib:${LD_LIBRARY_PATH:-}"
 
-if [ ! -f "${PROXYCHAINS_CONF}" ]; then
-  # Use default config if custom config doesn't exist
-  PROXYCHAINS_CONF="${PROXYCHAINS_ROOT}/share/proxychains.conf"
-fi
-
-# Check if the library exists
+# Check if the library exists at runtime
 if [ ! -f "${PROXYCHAINS_ROOT}/lib/libproxychains4.so" ]; then
   echo "ERROR: Could not locate libproxychains4.so in ${PROXYCHAINS_ROOT}/lib/"
   echo "Library paths searched: ${LD_LIBRARY_PATH}"
   exit 1
 fi
 
+# Execute proxychains with the provided arguments
 exec "${PROXYCHAINS_BIN}" -f "${PROXYCHAINS_CONF}" "$@"
 EOF
 chmod +x $BUILD_DIR/.gigalixir/proxychains/bin/proxychains-wrapper
-# Create .profile.d script to set up paths
+
+# Create .profile.d script to set up paths at startup
 cat > $BUILD_DIR/.profile.d/000_proxychains.sh << 'EOF'
 #!/usr/bin/env bash
 # Ensure the library path is correctly set at app startup
@@ -72,10 +78,5 @@ else
   find "$BUILD_DIR/.gigalixir/proxychains/lib" -name "*.so" -type f
   exit 1
 fi
-
-# Test the wrapper script
-echo "-----> Testing proxychains-wrapper"
-export LD_LIBRARY_PATH="$BUILD_DIR/.gigalixir/proxychains/lib:${LD_LIBRARY_PATH:-}"
-$BUILD_DIR/.gigalixir/proxychains/bin/proxychains-wrapper echo "Proxychains test successful" || echo "Proxychains test failed"
 
 echo "-----> proxychains4 installation completed"
